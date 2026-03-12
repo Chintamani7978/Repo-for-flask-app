@@ -1,5 +1,9 @@
 name: Deploy Flask App
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
     workflow_run:
         workflows: ["Docker Build & Push"] # Name of the upstream workflow
