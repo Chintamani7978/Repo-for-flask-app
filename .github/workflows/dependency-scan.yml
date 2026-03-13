@@ -24,4 +24,4 @@ jobs:
 
 
             - name: Audit Dependencies 
-              run: pop-audit -r requirements.txt
+              run: pip-audit -r requirements.txt
