@@ -24,4 +24,4 @@ jobs:
                 script: |
                     echo "starting deployment"
                     mkdir devops
-                    #docker compose up -d
+                    
