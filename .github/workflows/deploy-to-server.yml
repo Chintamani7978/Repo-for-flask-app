@@ -11,10 +11,7 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            #- name: copy docker compose file to server
-             # uses: sppleboy/scp-action@v1.0.3
-
-
+           
             - name: ssh to prd server
               uses: appleboy/ssh-action@v0.1.7
               with:
@@ -25,3 +22,21 @@ jobs:
                     echo "starting deployment"
                     mkdir -p devops
                     
+            - name: copy docker compose file to server
+              uses: sppleboy/scp-action@v1.0.3
+              with:
+                host: ${{ secrets.EC2_SSH_HOST }}
+                username: ${{ secrets.EC2_SSH_USER }}
+                key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+                source: docker-compose.yml
+                target: ~/devops
+                script: |
+                    echo "docker compose file copied to server"
+                    echo "starting docker compose up"
+                    sudo apt-get update && sudo apt-get install -y docker-compose
+                    sudo usermod -aG docker $USER
+                    export DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+                    export DOCKER_TAG: ${{ github.event.workflow_run.head_sha }}
+                    echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USER }} --password-stdin
+                    cd ~/devops && docker-compose u docker-compose up --build --force-recreate
+
